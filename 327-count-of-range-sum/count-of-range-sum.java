@@ -1,66 +1,46 @@
 class Solution {
     public int countRangeSum(int[] nums, int lower, int upper) {
-        long[] prefixSum = new long[nums.length + 1];
-        TreeSet<Long> values = new TreeSet<>();
+        long[] prefix = new long[nums.length + 1];
         
         for (int i = 0; i < nums.length; i++) {
-            prefixSum[i + 1] = prefixSum[i] + nums[i];
+            prefix[i + 1] = prefix[i] + nums[i];
         }
-        
-        for (long sum : prefixSum) {
-            values.add(sum);
-            values.add(sum - lower);
-            values.add(sum - upper);
-        }
-      
-        Map<Long, Integer> compressedIndex = new HashMap<>();
-        int rank = 1;
-        for (long value : values) {
-            compressedIndex.put(value, rank++);
-        }
-        
-   
-        FenwickTree bit = new FenwickTree(compressedIndex.size());
-        int count = 0;
-        
-        for (long sum : prefixSum) {
-            int left = compressedIndex.get(sum - upper);
-            int right = compressedIndex.get(sum - lower);
-            
-            
-            count += bit.rangeQuery(left, right);
-            
-            bit.update(compressedIndex.get(sum), 1);
-        }
-        
-        return count;
-    }
-}
 
-class FenwickTree {
-    private int[] bit;
-    
-    public FenwickTree(int size) {
-        bit = new int[size + 1]; 
+        return mergeSort(prefix, 0, prefix.length - 1, lower, upper);
     }
-    
-    public void update(int index, int delta) {
-        while (index < bit.length) {
-            bit[index] += delta;
-            index += index & -index; 
+
+    private int mergeSort(long[] prefix, int left, int right, int lower, int upper) {
+        if (left >= right) return 0;
+
+        int mid = left + (right - left) / 2;
+        int count = 0;
+
+        count += mergeSort(prefix, left, mid, lower, upper);
+        count += mergeSort(prefix, mid + 1, right, lower, upper);
+
+        int j = mid + 1;
+        int k = mid + 1;
+        int t = mid + 1;
+        long[] temp = new long[right - left + 1];
+        int idx = 0;
+
+        for (int i = left; i <= mid; i++) {
+            while (k <= right && prefix[k] - prefix[i] < lower) k++;
+            while (j <= right && prefix[j] - prefix[i] <= upper) j++;
+            count += j - k;
+
+          
+            while (t <= right && prefix[t] < prefix[i]) {
+                temp[idx++] = prefix[t++];
+            }
+            temp[idx++] = prefix[i];
         }
-    }
-    
-    public int query(int index) {
-        int sum = 0;
-        while (index > 0) {
-            sum += bit[index];
-            index -= index & -index; 
+
+        while (t <= right) {
+            temp[idx++] = prefix[t++];
         }
-        return sum;
-    }
-    
-    public int rangeQuery(int left, int right) {
-        return query(right) - query(left - 1); 
+
+        System.arraycopy(temp, 0, prefix, left, temp.length);
+        return count;
     }
 }
