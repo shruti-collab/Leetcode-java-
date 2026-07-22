@@ -9,50 +9,30 @@
  * }
  */
 class Solution {
-    public ListNode rotateRight(ListNode head, int n) {
+    public ListNode rotateRight(ListNode head, int k) {
+        if (head == null || head.next == null || k == 0) {
+            return head;
+        }
+
+        int length = 1;
         ListNode temp = head;
-        int len = 0;
 
-
-        if(n==0){
-            return head;
-        }
-
-        if(head==null){
-            return null;
-        }
-
-        while(temp.next!=null){
+        while (temp.next != null) {
             temp = temp.next;
-            len++;
-        }
-
-        int k = 0;
-
-        n = n % (len + 1);
-        
-        k = len - n +1 ;    
-
-        if(k==0){
-            return head;
+            length++;
         }
 
         temp.next = head;
+        k = k % length;
+        k = length - k;
 
-        int i = 0;
-
-        
-
-        temp = head;
-
-        while(i<k-1){
+        while (k-- > 0) {
             temp = temp.next;
-            i++;
         }
 
-        ListNode shead = temp.next;
+        head = temp.next;
         temp.next = null;
-        return shead;
-    }
 
+        return head;
+    }
 }
