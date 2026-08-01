@@ -1,28 +1,36 @@
 class Solution {
     public String getPermutation(int n, int k) {
-        if(n == 1) return "1";
-        StringBuilder sb = new StringBuilder();
-        for(int i = 1; i <= n; i++) sb.append(i);
-        int factorial = 1;
-        for(int i = 2; i < n; i++) factorial *= i;
-        n--;
+        int[] fact = new int[n + 1];
+        fact[0] = 1;
 
-        StringBuilder result = new StringBuilder();
-        while(k > 0) {
-            if(k % factorial == 0) {
-                result.append(sb.charAt((k / factorial) - 1));
-                sb.deleteCharAt((k / factorial) - 1);
-            } else {
-                result.append(sb.charAt(k / factorial));
-                sb.deleteCharAt(k / factorial);
-            } 
-
-            k %= factorial;
-            factorial /= n;
-            n--;
+        for (int i = 1; i <= n; i++) {
+            fact[i] = fact[i - 1] * i;
         }
 
-        for(int i = sb.length() - 1; i >= 0; i--) result.append(sb.charAt(i));
-        return result.toString();
+        boolean[] used = new boolean[n + 1];
+        StringBuilder res = new StringBuilder();
+
+        k--;
+
+        for (int pos = n; pos >= 1; pos--) {
+            int block = fact[pos - 1];
+            int idx = k / block;
+            k %= block;
+
+            for (int num = 1; num <= n; num++) {
+                if (used[num])
+                    continue;
+
+                if (idx == 0) {
+                    res.append(num);
+                    used[num] = true;
+                    break;
+                }
+
+                idx--;
+            }
+        }
+
+        return res.toString();
     }
 }
