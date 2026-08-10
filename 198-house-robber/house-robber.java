@@ -1,14 +1,29 @@
-class Solution {
-    public int rob(int[] nums) {
-        int prev2 = 0;
-        int prev1 = 0;
+import java.util.ArrayList;
 
-        for (int num : nums) {
-            int current = Math.max(prev1, prev2 + num);
-            prev2 = prev1;
-            prev1 = current;
+class Solution {
+    private ArrayList<Integer> dp;
+
+    private int helper(int[] nums, int i) {
+        if (i >= nums.length) {
+            return 0;
+        }
+        if (dp.get(i) != -1) {
+            return dp.get(i);
         }
 
-        return prev1;
+        int robCurr = nums[i] + helper(nums, i + 2);
+        int skipCurr = helper(nums, i + 1);
+
+        int maxVal = Math.max(robCurr, skipCurr);
+        dp.set(i, maxVal);
+        return maxVal;
+    }
+
+    public int rob(int[] nums) {
+        dp = new ArrayList<>(nums.length);
+        for (int i = 0; i < nums.length; i++) {
+            dp.add(-1);
+        }
+        return helper(nums, 0);
     }
 }
