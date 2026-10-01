@@ -1,18 +1,21 @@
 class Solution {
     public boolean isAnagram(String s, String t) {
-        if (s.length() != t.length()) return false ;
-        int[] arr = new int[26] ; // freq arr
+        if(s.length() != t.length())
+            return false;
 
-        for (int i = 0 ; i < s.length() ; i++ ){
-            arr[s.charAt(i) - 'a']++ ; //both will cancel each other
-            arr[t.charAt(i) - 'a']-- ; //out if they are anagrams
-            
+        HashMap<Character, Integer> scount = new HashMap<>();
+        HashMap<Character, Integer> tcount = new HashMap<>();
+
+        for(int i = 0; i < s.length(); i++) {
+            // Count frequency of characters in both strings
+            scount.put(s.charAt(i),
+                scount.getOrDefault(s.charAt(i), 0) + 1);
+
+            tcount.put(t.charAt(i),
+                tcount.getOrDefault(t.charAt(i), 0) + 1);
         }
-        for (int i : arr){
-            if (i != 0) {
-                return false ;
-            }
-        }
-        return true ;
+
+        // Both strings are anagrams if frequencies match
+        return scount.equals(tcount);
     }
 }
