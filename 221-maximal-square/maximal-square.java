@@ -1,40 +1,27 @@
-
-
 class Solution {
-    private int maxi = 0;
-    private int[][] dp;
-
     public int maximalSquare(char[][] matrix) {
-        int n = matrix.length;
-        int m = matrix[0].length;
-        dp = new int[n][m];
-        for (int[] row : dp) {
-            Arrays.fill(row, -1);
-        }
-
-        solve(matrix, 0, 0);
-
-        return maxi * maxi; 
-    }
-
-    private int solve(char[][] matrix, int i, int j) {
-        if (i >= matrix.length || j >= matrix[0].length) {
+        if (matrix.length == 0 || matrix[0].length == 0) {
             return 0;
         }
-        if (dp[i][j] != -1) {
-            return dp[i][j];
+        
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        int[][] dp = new int[rows][cols];
+        int maxSide = 0;
+        
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (matrix[i][j] == '1') {
+                    if (i == 0 || j == 0) {
+                        dp[i][j] = 1;
+                    } else {
+                        dp[i][j] = Math.min(Math.min(dp[i-1][j], dp[i][j-1]), dp[i-1][j-1]) + 1;
+                    }
+                    maxSide = Math.max(maxSide, dp[i][j]);
+                }
+            }
         }
-
-        int right = solve(matrix, i, j + 1);
-        int diagonal = solve(matrix, i + 1, j + 1);
-        int down = solve(matrix, i + 1, j);
-
-        if (matrix[i][j] == '1') {
-            dp[i][j] = 1 + Math.min(right, Math.min(down, diagonal));
-            maxi = Math.max(maxi, dp[i][j]); 
-        } else {
-            dp[i][j] = 0;
-        }
-        return dp[i][j];
+        
+        return maxSide * maxSide;
     }
 }
